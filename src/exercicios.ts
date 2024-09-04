@@ -82,3 +82,98 @@ class ContaCorrente extends ContaBancaria {
 
 const contaCorrenteExemplo = new ContaCorrente('Fernanda', 5000, 2000);
 console.log(contaCorrenteExemplo.exibirSaldo());
+
+//Generics em TypeScript
+function encontrarMaiorElemento<T extends number | string>(array: T[]): T {
+    if (array.length === 0) {
+        throw new Error("O array não pode estar vazio.");
+    }
+    
+    let maior = array[0];
+    for (let i = 1; i < array.length; i++) {
+        if (array[i] > maior) {
+            maior = array[i]; 
+        }
+    }
+    return maior;
+}
+
+const maiorNumero = encontrarMaiorElemento([10, 20, 30]);
+const maiorPalavra = encontrarMaiorElemento(['gato', 'elefante', 'zebra']);
+
+console.log(maiorNumero);
+console.log(maiorPalavra);
+
+//Decorators em TypeScript
+function medirTempoDeExecucao(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+    const metodoOriginal = descriptor.value;
+
+    descriptor.value = function (...args: any[]) {
+        console.time(propertyKey);
+        const resultado = metodoOriginal.apply(this, args);
+        console.timeEnd(propertyKey);  
+        return resultado;
+    };
+  
+    return descriptor;
+}
+
+class Calculadora {
+    @medirTempoDeExecucao
+    somarNumeros(array: number[]): number {
+        return array.reduce((a, b) => a + b, 0);
+    }
+}
+
+const calc = new Calculadora();
+calc.somarNumeros([1, 2, 3, 4, 5]);
+
+//Manipulação de Erros em TypeScript
+class EmailInvalidoError extends Error {
+    constructor(message: string) {
+        super(message);
+        this.name = 'EmailInvalidoError';
+    }
+}
+
+function verificarEmail(email: string): void {
+    if (!email.includes('@')) {
+        throw new EmailInvalidoError('Email inválido: O email deve conter o caractere "@"');
+    }
+
+    console.log('Email válido!');
+}
+
+try {
+    verificarEmail('usuario.com');
+} catch (error) {
+    if (error instanceof EmailInvalidoError) {
+        console.error(error.message);
+    }
+}
+
+//Async/Await e Promises em TypeScript
+async function buscarDadosDaAPI(): Promise<string> {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            const sucesso = Math.random() > 0.5; 
+
+            if (sucesso) {
+                resolve('Dados recebidos da API');
+            } else {
+                reject('Falha ao buscar dados da API');
+            }
+        }, 2000); 
+    });
+}
+
+async function executarBusca() {
+    try {
+        const dados = await buscarDadosDaAPI();
+        console.log(dados);
+    } catch (error) {
+        console.error('Erro ao buscar dados:', error);
+    }
+}
+
+executarBusca();
